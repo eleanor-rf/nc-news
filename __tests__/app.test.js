@@ -82,24 +82,25 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   it("should get all articles with comment_count", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
         const articles = response.body.articles;
-        console.log(articles);
         expect(articles.length).toBe(13);
         articles.forEach((entry) => {
-          expect(typeof entry.author).toBe("string");
-          expect(typeof entry.title).toBe("string");
-          expect(typeof entry.topic).toBe("string");
-          expect(typeof entry.article_img_url).toBe("string");
-          expect(typeof entry.created_at).toBe("string");
-          expect(typeof entry.article_id).toBe("number");
-          expect(typeof entry.votes).toBe("number");
-          expect(typeof entry.comment_count).toBe("number");
+          expect(entry).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            article_img_url: expect.any(String),
+            created_at: expect.any(String),
+            article_id: expect.any(Number),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
         });
       });
   });
