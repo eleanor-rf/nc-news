@@ -81,3 +81,48 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe.only("GET /api/articles", () => {
+  it("should get all articles with comment_count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        console.log(articles);
+        expect(articles.length).toBe(13);
+        articles.forEach((entry) => {
+          expect(typeof entry.author).toBe("string");
+          expect(typeof entry.title).toBe("string");
+          expect(typeof entry.topic).toBe("string");
+          expect(typeof entry.article_img_url).toBe("string");
+          expect(typeof entry.created_at).toBe("string");
+          expect(typeof entry.article_id).toBe("number");
+          expect(typeof entry.votes).toBe("number");
+          expect(typeof entry.comment_count).toBe("number");
+        });
+      });
+  });
+  it("should return articles sorted by date descending", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          coerce: true,
+          descending: true,
+        });
+      });
+  });
+  it("should not return article bodies", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        articles.forEach((entry) => {
+          expect(entry.body).toBe(undefined);
+        });
+      });
+  });
+});
