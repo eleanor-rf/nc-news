@@ -205,6 +205,30 @@ describe.only("POST comment to article", () => {
         expect(isValidCreatedDate).toBe(true);
       });
   });
+  it("should ignore unnecessary properties", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: "test comment",
+        a: "b",
+        c: "d",
+        e: "f",
+      })
+      .expect(201)
+      .then((response) => {
+        const createdAt = new Date(response.body.comment.created_at);
+        const isValidCreatedDate = !isNaN(createdAt.getTime());
+        expect(response.body.comment).toMatchObject({
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          comment_id: expect.any(Number),
+          votes: 0,
+        });
+        expect(isValidCreatedDate).toBe(true);
+      });
+  });
   it("should 400 bad request if username and/or body not provided", () => {
     return request(app)
       .post("/api/articles/1/comments")
@@ -218,6 +242,24 @@ describe.only("POST comment to article", () => {
     return request(app)
       .post("/api/articles/1325634645/comments")
       .send({ username: "butter_bridge", body: "test comment" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+  it("should 400 bad request if attempting to post to an invalid article id", () => {
+    return request(app)
+      .post("/api/articles/adfhgfgjghjk/comments")
+      .send({ username: "butter_bridge", body: "test comment" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should 404 not found if attempting to post from a username that does not exist", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "test", body: "test comment" })
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Not found");
