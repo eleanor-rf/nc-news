@@ -353,9 +353,19 @@ describe("delete comment by id", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
   test("should return 404 if an incorrect id is supplied", () => {
-    return request(app).delete("/api/comments/1000").expect(404);
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
   });
   test("should return 400 if an invalid id is supplied", () => {
-    return request(app).delete("/api/comments/fdgfdhfg").expect(400);
+    return request(app)
+      .delete("/api/comments/fdgfdhfg")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
   });
 });
