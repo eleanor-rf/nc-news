@@ -186,7 +186,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("POST comment to article", () => {
+describe.only("POST comment to article", () => {
   it("should return the posted comment", () => {
     return request(app)
       .post("/api/articles/1/comments")
@@ -205,6 +205,22 @@ describe("POST comment to article", () => {
         expect(isValidCreatedDate).toBe(true);
       });
   });
-  it("should 400 bad request if username and/or body not provided", () => {});
-  it("should 404 not found if attempting to post to an article id that does not exist", () => {});
+  it("should 400 bad request if username and/or body not provided", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ test: "test" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should 404 not found if attempting to post to an article id that does not exist", () => {
+    return request(app)
+      .post("/api/articles/1325634645/comments")
+      .send({ username: "butter_bridge", body: "test comment" })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
 });
