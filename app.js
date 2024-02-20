@@ -8,6 +8,7 @@ const {
   addComment,
   patchArticle,
 } = require("./controllers/articles-controller");
+const { removeComment } = require("./controllers/comments-controller");
 const { fetchEndpoints } = require("./controllers/endpoints-controller");
 const {
   handlePSQLErrors,
@@ -29,6 +30,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", addComment);
 
 app.patch("/api/articles/:article_id", patchArticle);
+
+app.delete("/api/comments/:comment_id", removeComment);
 
 app.use(handlePSQLErrors);
 app.use(handleCustomErrors);
