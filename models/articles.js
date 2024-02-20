@@ -25,3 +25,18 @@ exports.selectCommentsByArticleId = (articleId) => {
       return comments.rows;
     });
 };
+
+exports.insertComment = (articleId, username, body) => {
+  const now = new Date();
+  const postedAt = now.getTime();
+  const params = [articleId, username, body, postedAt];
+  params[3] /= 1000
+  return db
+    .query(
+      "INSERT INTO comments(article_id, author, body, created_at, votes) VALUES($1, $2, $3, to_timestamp($4), 0) RETURNING *",
+      params
+    )
+    .then((comment) => {
+      return comment.rows[0];
+    });
+};
