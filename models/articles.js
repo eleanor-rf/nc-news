@@ -37,3 +37,20 @@ exports.insertComment = (articleId, username, body) => {
       return comment.rows[0];
     });
 };
+
+exports.updateArticle = (articleId, newVote) => {
+  if (newVote === undefined || isNaN(newVote)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  const params = [newVote, articleId];
+
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+      params
+    )
+    .then((article) => {
+      return article.rows[0];
+    });
+};

@@ -266,3 +266,84 @@ describe("POST comment to article", () => {
       });
   });
 });
+
+describe("patch article", () => {
+  it("should update an article and return the updated article", () => {
+    const article1 = {
+      created_at: "2020-07-09T20:11:00.000Z",
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -1000 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          votes: -900,
+          ...article1,
+        });
+      });
+  });
+  it("should ignore anything that isn't inc_votes", () => {
+    const article1 = {
+      created_at: "2020-07-09T20:11:00.000Z",
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -1000, a: "b", c: "d" })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          votes: -900,
+          ...article1,
+        });
+      });
+  });
+  it("should 400 bad request if inc_votes is not provided", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ dsjklfns: 43665 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should 400 bad request if inc_votes isn't an integer", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "test" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should 404 not found if articleid isn't found", () => {
+    return request(app)
+      .patch("/api/articles/13464564564")
+      .send({ inc_votes: 17 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+  it("should 400 bad request if articleid is invalid", () => {
+    return request(app)
+      .patch("/api/articles/sdfdfgdf")
+      .send({ inc_votes: "test" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
