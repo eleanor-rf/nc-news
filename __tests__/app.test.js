@@ -186,7 +186,7 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST comment to article", () => {
+describe("POST comment to article", () => {
   it("should return the posted comment", () => {
     return request(app)
       .post("/api/articles/1/comments")
