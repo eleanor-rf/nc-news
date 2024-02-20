@@ -185,3 +185,26 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST comment to article", () => {
+  it("should return the posted comment", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "butter_bridge", body: "test comment" })
+      .expect(201)
+      .then((response) => {
+        const createdAt = new Date(response.body.comment.created_at);
+        const isValidCreatedDate = !isNaN(createdAt.getTime());
+        expect(response.body.comment).toMatchObject({
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          comment_id: expect.any(Number),
+          votes: 0,
+        });
+        expect(isValidCreatedDate).toBe(true);
+      });
+  });
+  it("should 400 bad request if username and/or body not provided", () => {});
+  it("should 404 not found if attempting to post to an article id that does not exist", () => {});
+});
