@@ -27,13 +27,10 @@ exports.selectCommentsByArticleId = (articleId) => {
 };
 
 exports.insertComment = (articleId, username, body) => {
-  const now = new Date();
-  const postedAt = now.getTime();
-  const params = [articleId, username, body, postedAt];
-  params[3] /= 1000
+  const params = [articleId, username, body];
   return db
     .query(
-      "INSERT INTO comments(article_id, author, body, created_at, votes) VALUES($1, $2, $3, to_timestamp($4), 0) RETURNING *",
+      "INSERT INTO comments(article_id, author, body) VALUES($1, $2, $3) RETURNING *",
       params
     )
     .then((comment) => {

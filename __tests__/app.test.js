@@ -143,7 +143,7 @@ describe("GET /api/articles/:article_id/comments", () => {
               created_at: expect.any(String),
               author: expect.any(String),
               body: expect.any(String),
-              article_id: expect.any(Number),
+              article_id: 1,
             });
           });
         }
@@ -196,9 +196,9 @@ describe("POST comment to article", () => {
         const createdAt = new Date(response.body.comment.created_at);
         const isValidCreatedDate = !isNaN(createdAt.getTime());
         expect(response.body.comment).toMatchObject({
-          author: expect.any(String),
-          body: expect.any(String),
-          article_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "test comment",
+          article_id: 1,
           comment_id: expect.any(Number),
           votes: 0,
         });
@@ -220,9 +220,9 @@ describe("POST comment to article", () => {
         const createdAt = new Date(response.body.comment.created_at);
         const isValidCreatedDate = !isNaN(createdAt.getTime());
         expect(response.body.comment).toMatchObject({
-          author: expect.any(String),
-          body: expect.any(String),
-          article_id: expect.any(Number),
+          author: "butter_bridge",
+          body: "test comment",
+          article_id: 1,
           comment_id: expect.any(Number),
           votes: 0,
         });
