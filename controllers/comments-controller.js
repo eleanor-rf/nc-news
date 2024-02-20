@@ -4,7 +4,6 @@ exports.removeComment = (request, response, next) => {
   const commentId = request.params.comment_id;
   return deleteComment(commentId)
     .then((comment) => {
-      console.log(comment)
       if (comment.rowCount === 0) {
         return Promise.reject({
           status: 404,
