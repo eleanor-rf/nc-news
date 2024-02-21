@@ -370,7 +370,7 @@ describe("delete comment by id", () => {
   });
 });
 
-describe.only("get users", () => {
+describe("get users", () => {
   it("should return all users", () => {
     return request(app)
       .get("/api/users")
