@@ -388,3 +388,43 @@ describe("get users", () => {
       });
   });
 });
+
+describe("GET articles with topic query", () => {
+  it("should return articles only with the given topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        articles.forEach((entry) => {
+          expect(entry).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: "mitch",
+            article_img_url: expect.any(String),
+            created_at: expect.any(String),
+            article_id: expect.any(Number),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  it("should return an empty array for a topic that exists but does not have any articles associated with it", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles).toEqual([]);
+      });
+  });
+  it("should return 404 not found if trying to filter by a topic that doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?topic=sdklgfnsdklgmd")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found")
+      });
+  });
+});

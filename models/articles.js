@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 exports.selectArticleById = (articleId) => {
   return db
@@ -8,14 +9,37 @@ exports.selectArticleById = (articleId) => {
     });
 };
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC"
-    )
-    .then((articles) => {
+const checkExists = (table, column, value) => {
+  const queryString = format("SELECT * FROM %I WHERE %I = $1;", table, column);
+  return db.query(queryString, [value]).then((result) => {
+    if (result.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Not found" });
+    }
+  });
+};
+
+exports.selectArticles = (topic) => {
+  const queryValues = [];
+  let queryString =
+    "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id";
+
+  if (topic !== undefined) {
+    queryString += " WHERE articles.topic = $1";
+    queryValues.push(topic);
+  }
+
+  queryString +=
+    " GROUP BY articles.article_id ORDER BY articles.created_at DESC";
+
+  return db.query(queryString, queryValues).then((articles) => {
+    if (!articles.rows.length) {
+      return checkExists("topics", "slug", topic).then((itExists) => {
+        return articles.rows;
+      });
+    } else {
       return articles.rows;
-    });
+    }
+  });
 };
 
 exports.selectCommentsByArticleId = (articleId) => {
