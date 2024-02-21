@@ -39,10 +39,6 @@ exports.insertComment = (articleId, username, body) => {
 };
 
 exports.updateArticle = (articleId, newVote) => {
-  if (newVote === undefined || isNaN(newVote)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  }
-
   const params = [newVote, articleId];
 
   return db
