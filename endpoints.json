@@ -10,7 +10,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles with total comments",
+    "description": "serves an array of all articles with total comments, can filter by topic",
+    "queries": ["topic"],
     "exampleResponse": {
       "articles": [
         {

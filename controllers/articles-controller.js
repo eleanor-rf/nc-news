@@ -18,7 +18,8 @@ exports.getArticleById = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-  return selectArticles()
+  const topic = request.query.topic;
+  return selectArticles(topic)
     .then((articles) => {
       response.status(200).send({ articles });
     })
