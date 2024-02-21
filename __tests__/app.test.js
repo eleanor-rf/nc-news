@@ -56,13 +56,36 @@ describe("GET /api/articles/:article_id", () => {
       votes: 100,
       article_img_url:
         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-      comment_count: 11,
     };
     return request(app)
       .get("/api/articles/1")
       .expect(200)
       .then((response) => {
-        expect(response.body.article).toEqual(expected);
+        expect(response.body.article).toMatchObject({
+          comment_count: 11,
+          ...expected,
+        });
+      });
+  });
+  it("should return requested article with comment count = 0 for article with 0 comments", () => {
+    const expected = {
+      article_id: 4,
+      title: "Student SUES Mitch!",
+      topic: "mitch",
+      author: "rogersop",
+      body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+      created_at: "2020-05-06T01:14:00.000Z",
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .get("/api/articles/4")
+      .expect(200)
+      .then((response) => {
+         expect(response.body.article).toMatchObject({
+           comment_count: 0,
+           ...expected,
+         });
       });
   });
   it("should 404 not found if requesting a non existent article", () => {
