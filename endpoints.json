@@ -71,6 +71,19 @@
     "queries": ["comment_id"],
     "exampleResponse": {}
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "update the votes on a comment given the comment's comment_id",
+    "queries": ["comment_id"],
+    "exampleResponse": {
+      "comment": {
+        "body": "Fruit pastilles",
+        "votes": 1,
+        "author": "icellusedkars",
+        "article_id": 1,
+        "created_at": 1592220300000
+      }
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
@@ -88,13 +101,11 @@
     "description": "returns a single user matching the specified username",
     "queries": ["username"],
     "exampleResponse": {
-      "user": [
-        {
-          "username": "lurker",
-          "name": "do_nothing",
-          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
-        }
-      ]
+      "user": {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
     }
   }
 }
