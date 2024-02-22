@@ -82,10 +82,10 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/4")
       .expect(200)
       .then((response) => {
-         expect(response.body.article).toMatchObject({
-           comment_count: 0,
-           ...expected,
-         });
+        expect(response.body.article).toMatchObject({
+          comment_count: 0,
+          ...expected,
+        });
       });
   });
   it("should 404 not found if requesting a non existent article", () => {
@@ -449,6 +449,60 @@ describe("GET articles with topic query", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Not found");
+      });
+  });
+});
+
+describe("GET /api/articles with sorting", () => {
+  it("should sort articles as requested", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles).toBeSortedBy("author", {
+          ascending: true,
+          coerce: true,
+        });
+      });
+  });
+  it("should sort articles as requested", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic&order=desc")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles).toBeSortedBy("topic", {
+          descending: true,
+          coerce: true,
+        });
+      });
+  });
+  it("should sort articles as requested", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles).toBeSortedBy("votes", {
+          ascending: true,
+        });
+      });
+  });
+  it("should give 400 bad request if invalid sort_by query is given", () => {
+    return request(app)
+      .get("/api/articles?sort_by=dsfdfgfdhs&order=asc")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should give 400 bad request if invalid order query is given", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=sdhgfghdsdf")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
       });
   });
 });
