@@ -506,3 +506,29 @@ describe("GET /api/articles with sorting", () => {
       });
   });
 });
+
+describe("select user by username", () => {
+  it("should return the selected user", () => {
+    const user = {
+      username: "butter_bridge",
+      name: "jonny",
+      avatar_url:
+        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+    };
+
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.user).toEqual(user);
+      });
+  });
+  it("should 404 if user doesn't exist", () => {
+    return request(app)
+      .get("/api/users/bsdfsdgdfhgfhgf")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toEqual("Not found");
+      });
+  });
+});
