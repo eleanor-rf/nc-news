@@ -13,6 +13,7 @@ The API is hosted with Render and ElephantSQL. This link https://nc-news-tu4n.on
 
 - Node v21.6.2
 - Postgres v8.11.3
+- pg-format (`npm install pg-format`)
 
 ### Local installation
 
@@ -29,10 +30,10 @@ In `.env.development` set `PGDATABASE=nc_news`.
 3. In the root folder run the following commands to set up and seed the test database:
 
 ```
-npm setup-dbs
-npm seed
+npm run setup-dbs
+npm run seed
 ```
 
 4. To run tests, run:
 
-`npm test`
+`npm run test`
