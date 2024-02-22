@@ -532,3 +532,61 @@ describe("select user by username", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  it("should update comment votes and return updated comment", () => {
+    const expected = {
+      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      author: "butter_bridge",
+      article_id: 9,
+      created_at: "2020-04-06T12:17:00.000Z",
+    };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 14 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment).toMatchObject({
+          votes: 30,
+          ...expected,
+        });
+      });
+  });
+  it("should 400 bad request if inc_votes is not provided", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ dsjklfns: 43665 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should 400 bad request if inc_votes isn't an integer", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "test" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("should 404 not found if articleid isn't found", () => {
+    return request(app)
+      .patch("/api/comments/13464564564")
+      .send({ inc_votes: 17 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+  it("should 400 bad request if articleid is invalid", () => {
+    return request(app)
+      .patch("/api/comments/sdfdfgdf")
+      .send({ inc_votes: "test" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
