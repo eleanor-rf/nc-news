@@ -21,7 +21,7 @@ const checkExists = (table, column, value) => {
   });
 };
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
   const queryValues = [];
   let queryString =
     "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id";
@@ -31,8 +31,15 @@ exports.selectArticles = (topic) => {
     queryValues.push(topic);
   }
 
-  queryString +=
-    " GROUP BY articles.article_id ORDER BY articles.created_at DESC";
+  if (!["title", "topic", "author", "votes", "created_at"].includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
 
   return db.query(queryString, queryValues).then((articles) => {
     if (!articles.rows.length) {
