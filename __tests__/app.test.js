@@ -588,6 +588,28 @@ describe("/api/articles tests", () => {
         });
     });
   });
+
+  describe("DELETE /api/articles/:article_id", () => {
+    it("should return status code 204", () => {
+      return request(app).delete("/api/articles/1").expect(204);
+    });
+    it("should return 404 if an incorrect id is supplied", () => {
+      return request(app)
+        .delete("/api/articles/1000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not found");
+        });
+    });
+    it("should return 400 if an invalid id is supplied", () => {
+      return request(app)
+        .delete("/api/articles/fdgfdhfg")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
+  });
 });
 
 describe("/api/comments tests", () => {
