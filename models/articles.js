@@ -57,7 +57,7 @@ exports.selectArticles = (
   };`;
 
   return db.query(queryString, queryValues).then((articles) => {
-    if (!articles.rows.length) {
+    if (!articles.rows.length && topic) {
       return checkExists("topics", "slug", topic).then((itExists) => {
         return articles.rows;
       });
@@ -67,12 +67,21 @@ exports.selectArticles = (
   });
 };
 
-exports.selectCommentsByArticleId = (articleId) => {
-  return db
-    .query("SELECT * FROM comments WHERE article_id = $1", [articleId])
-    .then((comments) => {
-      return comments.rows;
-    });
+exports.selectCommentsByArticleId = (articleId, limit = 10, p = 1) => {
+  const lim = parseInt(limit);
+  const page = parseInt(p);
+
+  if (isNaN(lim) || isNaN(page) || limit <= 0 || page <= 0) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  const queryString = `SELECT * FROM comments WHERE article_id = $1 LIMIT ${lim} OFFSET ${
+    limit * (page - 1)
+  }`;
+
+  return db.query(queryString, [articleId]).then((comments) => {
+    return comments.rows;
+  });
 };
 
 exports.insertComment = (articleId, username, body) => {

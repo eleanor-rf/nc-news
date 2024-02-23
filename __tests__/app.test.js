@@ -172,6 +172,35 @@ describe("/api/articles tests", () => {
           expect(response.body.msg).toBe("Bad request");
         });
     });
+    it("should paginate correctly", () => {
+      const orderedIds = [2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 18];
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=2")
+        .expect(200)
+        .then((response) => {
+          const comments = response.body.comments;
+          const responseCommentIds = comments.map(
+            (comment) => comment.comment_id
+          );
+          expect(responseCommentIds).toEqual(orderedIds.slice(5, 10));
+        });
+    });
+    it("returns an empty array if page number is beyond range", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=50")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments).toEqual([]);
+        });
+    });
+    it("returns 400 bad request if inappropriate pages/limits given", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=sggdfd&p=ddddd")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
+        });
+    });
   });
 
   describe("POST comment to article", () => {
@@ -542,12 +571,12 @@ describe("/api/articles tests", () => {
           expect(responseArticleIds).toEqual(orderedIds.slice(5, 10));
         });
     });
-    it("returns 404 not found if attempting to access nonexistent articles", () => {
+    it("returns no comments for page numbers out of bounds", () => {
       return request(app)
         .get("/api/articles?p=50")
-        .expect(404)
+        .expect(200)
         .then((response) => {
-          expect(response.body.msg).toBe("Not found");
+          expect(response.body.articles).toEqual([]);
         });
     });
     it("returns 400 bad request if inappropriate pages/limits given", () => {

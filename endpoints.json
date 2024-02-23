@@ -41,6 +41,17 @@
       "comment_count": 11
     }
   },
+  "GET /api/articles/:article_id/comments": {
+    "description": "fetches comments linked to a given article id with pagination, limit and offset (p)",
+    "queries": ["article_id", "limit", "p"],
+    "exampleResponse": {
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      "votes": 14,
+      "author": "butter_bridge",
+      "article_id": 1,
+      "created_at": 1604113380000
+    }
+  },
   "POST /api/articles/:article_id/comment": {
     "description": "posts a new comment to an article when provided username and body - username and article id must be valid",
     "queries": ["article_id"],
