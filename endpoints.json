@@ -142,5 +142,9 @@
       "slug": "name of topic",
       "description": "description of topic"
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article and all its associated comments",
+    "queries": ["article_id"]
   }
 }
