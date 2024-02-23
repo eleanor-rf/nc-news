@@ -84,3 +84,19 @@ exports.updateArticle = (articleId, newVote) => {
       return article.rows[0];
     });
 };
+
+exports.insertArticle = (author, title, body, topic, article_img_url) => {
+  const params = [author, title, body, topic];
+  let queryString =
+    "INSERT INTO articles(author, title, body, topic) VALUES($1, $2, $3, $4) RETURNING *";
+
+  if (article_img_url !== undefined) {
+    params.push(article_img_url);
+    queryString =
+      "INSERT INTO articles(author, title, body, topic, article_img_url) VALUES($1, $2, $3, $4, $5) RETURNING *";
+  }
+
+  return db.query(queryString, params).then((article) => {
+    return article.rows[0];
+  });
+};
