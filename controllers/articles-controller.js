@@ -31,8 +31,11 @@ exports.getArticles = (request, response, next) => {
 
 exports.getCommentsByArticleId = (request, response, next) => {
   const articleId = request.params.article_id;
-  return selectCommentsByArticleId(articleId)
-    .then((comments) => response.status(200).send({ comments }))
+  const { limit, p } = request.query;
+  return selectCommentsByArticleId(articleId, limit, p)
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
     .catch((error) => {
       next(error);
     });
