@@ -78,7 +78,6 @@ describe("/api/articles tests", () => {
         .expect(200)
         .then((response) => {
           const articles = response.body.articles;
-          expect(articles.length).toBe(13);
           articles.forEach((entry) => {
             expect(entry).toMatchObject({
               author: expect.any(String),
@@ -524,6 +523,39 @@ describe("/api/articles tests", () => {
         .expect(404)
         .then((response) => {
           expect(response.body.msg).toBe("Not found");
+        });
+    });
+  });
+
+  describe("GET /api/articles with pagination", () => {
+    it("returns the expected article in the correct order, starting at the correct page", () => {
+      const orderedIds = [3, 6, 2, 12, 13, 5, 1, 9, 10, 4, 8, 11, 7];
+
+      return request(app)
+        .get("/api/articles?limit=5&p=2")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          const responseArticleIds = articles.map(
+            (article) => article.article_id
+          );
+          expect(responseArticleIds).toEqual(orderedIds.slice(5, 10));
+        });
+    });
+    it("returns 404 not found if attempting to access nonexistent articles", () => {
+      return request(app)
+        .get("/api/articles?p=50")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Not found");
+        });
+    });
+    it("returns 400 bad request if inappropriate pages/limits given", () => {
+      return request(app)
+        .get("/api/articles?limit=sggdfd&p=ddddd")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Bad request");
         });
     });
   });
