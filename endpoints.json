@@ -10,8 +10,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles with total comments, can filter by topic and sort and order by article properties",
-    "queries": ["topic", "sort_by", "order"],
+    "description": "serves an array of all articles with total comments, can filter by topic and sort and order by article properties - pagination is possible with limit and offset (p)",
+    "queries": ["topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
         {
