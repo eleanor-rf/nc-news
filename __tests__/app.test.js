@@ -590,3 +590,98 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("POST /api/articles", () => {
+  it("posts article and returns the posted article", () => {
+    const newArticle = {
+      author: "lurker",
+      title: "test",
+      body: "test",
+      topic: "cats",
+      article_img_url: "test",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then((response) => {
+        const createdAt = new Date(response.body.article.created_at);
+        const isValidCreatedDate = !isNaN(createdAt.getTime());
+        expect(response.body.article).toMatchObject({
+          article_id: expect.any(Number),
+          votes: 0,
+          comment_count: 0,
+          ...newArticle,
+        });
+        expect(isValidCreatedDate).toBe(true);
+      });
+  });
+  it("gives the default image url if one is not provided", () => {
+    const newArticle = {
+      author: "lurker",
+      title: "test",
+      body: "test",
+      topic: "cats",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then((response) => {
+        const createdAt = new Date(response.body.article.created_at);
+        const isValidCreatedDate = !isNaN(createdAt.getTime());
+        expect(response.body.article).toMatchObject({
+          article_id: expect.any(Number),
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          votes: 0,
+          comment_count: 0,
+          ...newArticle,
+        });
+        expect(isValidCreatedDate).toBe(true);
+      });
+  });
+  it("gives 400 bad request if trying to post an article with required fields missing", () => {
+    const newArticle = {
+      author: "lurker",
+      body: "test",
+      topic: "cats",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  it("gives 404 not found if trying to post an article with an author who doesn't exist", () => {
+    const newArticle = {
+      author: "dsgfdgfdgd",
+      body: "test",
+      title: "test",
+      topic: "cats",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+  it("gives 404 not found if trying to post an article with a topic that doesn't exist", () => {const newArticle = {
+    author: "lurker",
+    body: "test",
+    title: "test",
+    topic: "ddddddddd",
+  };
+  return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("Not found");
+    });});
+});
