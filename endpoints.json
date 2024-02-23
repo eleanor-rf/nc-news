@@ -135,5 +135,12 @@
         "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "posts a new topic to topics table when provided slug and description",
+    "exampleResponse": {
+      "slug": "name of topic",
+      "description": "description of topic"
+    }
   }
 }

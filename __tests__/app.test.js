@@ -710,6 +710,51 @@ describe("/api/topics tests", () => {
         });
     });
   });
+
+  describe("POST /api/topics tests", () => {
+    it("should add a new topic & returns it", () => {
+      const newTopic = {
+        slug: "topic name here",
+        description: "description here",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(201)
+        .then((response) => {
+          expect(response.body.topic).toEqual(newTopic);
+        });
+    });
+    it("should 400 bad request if slug and/or description are not provided", () => {
+      const newTopic = {
+        sffgd: "topic name here",
+        hjjjjj: "description here",
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toEqual("Bad request");
+        });
+    });
+    it("should 400 bad request if slug and/or description are not strings", () => {
+      const newTopic = {
+        slug: 555555,
+        description: 34646575,
+      };
+
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toEqual("Bad request");
+        });
+    });
+  });
 });
 
 describe("/api/users tests", () => {
