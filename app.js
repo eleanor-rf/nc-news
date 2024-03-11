@@ -11,6 +11,9 @@ const {
   handle500Errors,
 } = require("./controllers/errors-controller.js");
 app.use(express.json());
+const cors = require("cors");
+
+app.use(cors());
 
 app.use("/api/topics", topicsRouter);
 app.use("/api/articles", articlesRouter);
