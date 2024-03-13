@@ -37,7 +37,16 @@ exports.selectArticles = (
     queryValues.push(topic);
   }
 
-  if (!["title", "topic", "author", "votes", "created_at", "comment_count"].includes(sort_by)) {
+  if (
+    ![
+      "title",
+      "topic",
+      "author",
+      "votes",
+      "created_at",
+      "comment_count",
+    ].includes(sort_by)
+  ) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
@@ -52,9 +61,15 @@ exports.selectArticles = (
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}, articles.article_id LIMIT ${lim} OFFSET ${
-    limit * (page - 1)
-  };`;
+  if (sort_by !== "comment_count") {
+    queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}, articles.article_id LIMIT ${lim} OFFSET ${
+      limit * (page - 1)
+    };`;
+  } else if (sort_by === "comment_count") {
+    queryString += ` GROUP BY articles.article_id ORDER BY COUNT(comments.comment_id) ${order}, articles.article_id LIMIT ${lim} OFFSET ${
+      limit * (page - 1)
+    };`;
+  }
 
   return db.query(queryString, queryValues).then((articles) => {
     if (!articles.rows.length && topic) {
@@ -139,7 +154,7 @@ exports.deleteArticle = (articleId) => {
     })
     .then((articlesResult) => {
       articlesDeleted = articlesResult.rowCount;
-      if (articlesDeleted === 0){
+      if (articlesDeleted === 0) {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
       return { commentsDeleted, articlesDeleted };
@@ -148,7 +163,3 @@ exports.deleteArticle = (articleId) => {
       return response;
     });
 };
-
-
-   
-    

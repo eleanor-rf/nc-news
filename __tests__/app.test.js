@@ -441,6 +441,17 @@ describe("/api/articles tests", () => {
           });
         });
     });
+    it("should sort articles as requested", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count&order=desc")
+        .expect(200)
+        .then((response) => {
+          const articles = response.body.articles;
+          expect(articles).toBeSortedBy("comment_count", {
+            descending: true,
+          });
+        });
+    });
     it("should give 400 bad request if invalid sort_by query is given", () => {
       return request(app)
         .get("/api/articles?sort_by=dsfdfgfdhs&order=asc")
