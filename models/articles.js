@@ -37,7 +37,7 @@ exports.selectArticles = (
     queryValues.push(topic);
   }
 
-  if (!["title", "topic", "author", "votes", "created_at"].includes(sort_by)) {
+  if (!["title", "topic", "author", "votes", "created_at", "comment_count"].includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
